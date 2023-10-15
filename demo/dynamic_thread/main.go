@@ -38,7 +38,6 @@ func main() {
 		},
 		Eventual: func() (string, []slack.Block, error) {
 			seconds := time.Duration(rand.Float64()*15.0) * time.Second
-			fmt.Printf("sleeping %v\n", seconds)
 			time.Sleep(seconds)
 			if rand.Float64() > 0.9 {
 				return "", nil, fmt.Errorf("randomly induced failure")

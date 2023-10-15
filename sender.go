@@ -239,7 +239,8 @@ func (s *Sender) PostThreadDynamic(rootMsg DynamicSummary, msgs ...DynamicMessag
 
 	// loop until all the messages have been finalized
 	failures := 0
-	deadline := time.Now().Add(s.Timeout)
+	timeout := max(time.Minute, s.Timeout) // short deadlines are unreasonable
+	deadline := time.Now().Add(timeout)
 	for remaining > 0 {
 		for i, msg := range msgs {
 			select {
