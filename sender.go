@@ -325,39 +325,4 @@ func (s *Sender) PostThreadDynamic(rootMsg DynamicSummary, msgs ...DynamicMessag
 	}
 
 	return
-
-	//var wg sync.WaitGroup
-	//var ts string
-	//wg.Add(1)
-	//_, ts, err = s.postMessageDynamic(ts, msgs[0], &wg)
-	//
-	//// TODO: run all the slow jobs in parallel goroutines
-	//for i, msg := range msgs[1:] {
-	//	wg.Add(1)
-	//	_, _, err = s.postMessageDynamic(ts, msg, &wg)
-	//	if err != nil {
-	//		return fmt.Errorf("failed posting dynamic message %d/%d in thread: %w", i+1, len(msgs), err)
-	//	}
-	//}
-	//wg.Wait()
-	//return
 }
-
-// ordering is optional
-// fail fast is optional
-// dynamic? first, replacement, error message
-//func (s *Sender) PostThreadFn(channel string, text []string, mReqFns ...func() slack.PostMessageParameters) (chan Message, chan error) {
-//	responses := make(chan Message, len(mReqFns))
-//	errors := make(chan error, len(mReqFns))
-//	go func() {
-//		for i, mReq := range mReqFns {
-//			msg, err := PostMessage(channel, text[i], mReq())
-//			if err != nil {
-//				errors <- err
-//			} else {
-//				responses <- msg
-//			}
-//		}
-//	}()
-//	return responses, errors
-//}
