@@ -46,6 +46,7 @@ func (s *Sender) PostThreadFutureWithSummarizer(summary SummaryGenerator, msgs .
 		var channel string
 		var ts string
 		channel, ts, err = s.apiClient.PostMessage(s.Channel,
+			slack.MsgOptionPostMessageParameters(*s.PostMessageParameters),
 			slack.MsgOptionText(summary(0, 0), false),
 		)
 		if err != nil {

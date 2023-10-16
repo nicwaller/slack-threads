@@ -32,12 +32,11 @@ func InChannel(channel string) *Channel {
 		channel: channel,
 	}
 	c.Sender = &Sender{
-		apiClient: defaultSender.apiClient,
-		PostMessageParameters: &slack.PostMessageParameters{
-			Channel: channel,
-		},
-		FallbackChannel: defaultSender.FallbackChannel,
+		apiClient:             defaultSender.apiClient,
+		PostMessageParameters: defaultSender.PostMessageParameters, // FIXME: wanted deep copy but got reference
+		FallbackChannel:       defaultSender.FallbackChannel,
 	}
+	c.Sender.PostMessageParameters.Channel = channel
 	return c
 }
 
