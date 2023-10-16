@@ -28,7 +28,7 @@ func DefaultSummarizer(total int, succeeded int) (text string) {
 		return
 	}
 	failures := total - succeeded
-	if succeeded == 0 {
+	if failures == 0 {
 		text += fmt.Sprintf("%d/%d done! :white_check_mark:", succeeded, total)
 	} else {
 		text += fmt.Sprintf("%d succeeded but %d failed. :x:", succeeded, failures)
