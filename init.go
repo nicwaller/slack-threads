@@ -19,7 +19,7 @@ func init() {
 		slog.Error("no Slack API token")
 	}
 	defaultSender = &Sender{
-		Client: slack.New(token),
+		apiClient: slack.New(token),
 		PostMessageParameters: &slack.PostMessageParameters{
 			Markdown: true,
 			// TODO: pre-populate metadata with useful information like hostname, IP address

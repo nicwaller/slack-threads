@@ -5,57 +5,43 @@ import (
 	"github.com/nicwaller/slack_threads"
 	"github.com/slack-go/slack"
 	"math/rand"
-	"os"
 	"time"
 )
 
+func init() {
+	slack_threads.Customize("Slack Dog", "dog")
+}
+
 func main() {
+	test3 := slack_threads.InChannel("test-3")
 
-	s := slack_threads.InChannel("test-3").
-		Customize("Slack Robot", "robot_face")
-
-	summary := slack_threads.DynamicSummary{
-		Placeholder: func() string {
-			return ":thread: preparing reports..."
-		},
-		Eventual: func(total int, failures int) (string, []slack.Block, error) {
-			text := ":thread: preparing reports... "
-			if failures == 0 {
-				text += "done! :white_check_mark:"
-			} else {
-				text += fmt.Sprintf("%d/%d failed. :x:", failures, total)
-			}
-			return text, nil, nil
-		},
+	dyns := make([]*slack_threads.MessageFuture, 8)
+	for i := range dyns {
+		dyns[i] = future(i)
 	}
 
-	dynRandom := slack_threads.DynamicMessage{
+	thread := Must(test3.PostThreadFutureWithSummarizer(slack_threads.DefaultSummarizer, dyns...))
+	_, _ = thread.Post("<@U02BJDJN676> your report is done")
+}
+
+func future(index int) *slack_threads.MessageFuture {
+	prefix := fmt.Sprintf("[%d] computing results...", index)
+	return &slack_threads.MessageFuture{
 		Placeholder: func() string {
-			return "computing results..."
+			return prefix
 		},
 		OnFailure: func(err error) string {
-			return fmt.Sprintf("computing results... failed: %v", err)
+			return prefix + fmt.Sprintf("failed: %v", err)
 		},
 		Eventual: func() (string, []slack.Block, error) {
 			seconds := time.Duration(rand.Float64()*15.0) * time.Second
 			time.Sleep(seconds)
-			if rand.Float64() > 0.9 {
+			if rand.Float64() > 0.8 {
 				return "", nil, fmt.Errorf("randomly induced failure")
 			}
 			a, b, c := genMessage(seconds)
 			return a, b, c
 		},
-	}
-
-	dyns := make([]slack_threads.DynamicMessage, 5)
-	for i := range dyns {
-		dyns[i] = dynRandom
-	}
-
-	_, _, err := s.PostThreadDynamic(summary, dyns...)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
 	}
 }
 
@@ -77,4 +63,11 @@ func genMessage(delay time.Duration) (text string, blocks []slack.Block, err err
 	}
 
 	return
+}
+
+func Must[T any](result T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return result
 }
